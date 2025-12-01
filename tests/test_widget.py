@@ -1,5 +1,6 @@
 import pytest
-from src.widget import mask_account_card, get_date
+
+from src.widget import get_date, mask_account_card
 
 
 class TestMaskAccountCard:
@@ -16,7 +17,7 @@ class TestMaskAccountCard:
             ("MasterCard 1234567890123456", "MasterCard 1234 56** **** 3456"),
         ],
     )
-    def test_mask_card_number(self, input_data, expected):
+    def test_mask_card_number(self, input_data: str, expected: str) -> None:
         assert mask_account_card(input_data) == expected
 
     # Параметризованные тесты для счетов
@@ -28,28 +29,28 @@ class TestMaskAccountCard:
             ("Счет 12345678901234567892", "Счет **7892"),
         ],
     )
-    def test_mask_account_number(self, input_data, expected):
+    def test_mask_account_number(self, input_data: str, expected: str) -> None:
         assert mask_account_card(input_data) == expected
 
     # Тесты для некорректных данных
-#    @pytest.mark.parametrize(
-#        "invalid_input",
-#        [
-#            "",
-#            "InvalidStringWithoutNumber",
-#            "Счет",
-#            "Card",
-#            "Счет 123",
-#            "Card 123",
-#            "Счет 123456789012345678901234567890",  # Слишком длинный номер
-#        ],
-#    )
-#    def test_invalid_input(self, invalid_input):
-#        with pytest.raises(ValueError):
-#            mask_account_card(invalid_input)
+    #    @pytest.mark.parametrize(
+    #        "invalid_input",
+    #        [
+    #            "",
+    #            "InvalidStringWithoutNumber",
+    #            "Счет",
+    #            "Card",
+    #            "Счет 123",
+    #            "Card 123",
+    #            "Счет 123456789012345678901234567890",  # Слишком длинный номер
+    #        ],
+    #    )
+    #    def test_invalid_input(self, invalid_input):
+    #        with pytest.raises(ValueError):
+    #            mask_account_card(invalid_input)
 
     # Тест на обработку разных регистров
-    def test_case_insensitive(self):
+    def test_case_insensitive(self) -> None:
         assert mask_account_card("сЧет 12345678901234567890") == "сЧет **7890"
 
 
@@ -66,10 +67,11 @@ class TestGetDate:
             ("1999-01-01T12:00:00", "01.01.1999"),
         ],
     )
-    def test_date_conversion(self, input_date, expected):
+    def test_date_conversion(self, input_date: str, expected: str) -> None:
         assert get_date(input_date) == expected
 
-    # Тесты граничных случаев
+        # Тесты граничных случаев
+
     @pytest.mark.parametrize(
         "input_date, expected",
         [
@@ -78,13 +80,13 @@ class TestGetDate:
             ("2024-02-28T12:00:00", "28.02.2024"),  # Конец февраля
         ],
     )
-    def test_boundary_dates(self, input_date, expected):
+    def test_boundary_dates(self, input_date: str, expected: str) -> None:
         assert get_date(input_date) == expected
 
     # Тест на корректность обработки без времени
-    def test_date_without_time(self):
+    def test_date_without_time(self) -> None:
         assert get_date("2024-03-25") == "25.03.2024"
 
     # Тест на обработку минимально допустимой даты
-    def test_minimum_date(self):
+    def test_minimum_date(self) -> None:
         assert get_date("0001-01-01T00:00:00") == "01.01.0001"
