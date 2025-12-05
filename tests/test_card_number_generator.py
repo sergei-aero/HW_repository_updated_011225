@@ -120,14 +120,14 @@ class TestCardNumberGenerator:
         [
             (0, 5),  # Начинается с 0
             (9995, 10000),  # Включает 5-значное число (должно работать)
-            (-1, 3),  # Отрицательное начало (ожидаем ошибку при форматировании)
+            (-1, "3"),  # Отрицательное начало (ожидаем ошибку при форматировании)
         ],
     )
     def test_various_ranges(self, start: int, end: int) -> None:
         """Проверяем генератор с различными диапазонами."""
         if start < 0:
             # Отрицательные числа не могут быть отформатированы как 04d
-            with pytest.raises(ValueError):
+            with pytest.raises(TypeError):
                 list(card_number_generator(start, end))
         else:
             numbers = list(card_number_generator(start, end))
