@@ -1,5 +1,5 @@
-from masks import get_mask_card_number, get_mask_account
-
+from src.masks import get_mask_card_number, get_mask_account
+from src.utils import load_json_operations
 
 def main():
     """Простая демонстрация функций"""
