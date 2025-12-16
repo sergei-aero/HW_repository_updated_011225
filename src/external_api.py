@@ -19,6 +19,7 @@ def convert_to_rubles(transaction: Dict[str, Any]) -> float:
     # Извлекаем сумму и валюту
     amount = float(transaction["operationAmount"]["amount"])
     currency_code = transaction["operationAmount"]["currency"]["code"]
+    exchange_date = transaction["date"]
 
     # Если валюта уже в рублях - возвращаем как есть
     if currency_code == "RUB":
@@ -26,16 +27,11 @@ def convert_to_rubles(transaction: Dict[str, Any]) -> float:
 
     # Получаем курс валюты через API
     api_key = os.getenv("ForexAPIKey")
-    url = "https://api.apilayer.com/exchangerates_data/latest"
+    url = "https://data.fixer.io/api/convert?access_key={api_key}"
 
-    headers = {"apikey": api_key}
-    params = {"base": currency_code, "symbols": "RUB"}
+    querystring = {"from": "currency_code", "to": "RUB", "amount": "amount", "date": "exchange_date"}
 
-    response = requests.get(url, headers=headers, params=params)
+    response = requests.get(url, params=querystring)
     data = response.json()
 
-    # Извлекаем курс
-    rate = data["rates"]["RUB"]
-
-    # Конвертируем
-    return amount * rate
+    return data["result"]
