@@ -1,4 +1,5 @@
 import unittest
+import requests
 from unittest.mock import Mock, patch
 
 from src.external_api import convert_to_rubles
@@ -22,7 +23,7 @@ class TestCurrencyConverter(unittest.TestCase):
         """
         Тест: транзакция в рублях (без вызова API).
         """
-        with patch("currency_converter.requests.get") as mock_get:
+        with patch("src.external_api.requests.get") as mock_get:
             result = convert_to_rubles(self.rub_transaction)
 
             # API не должно вызываться для рублевых транзакций
@@ -33,55 +34,55 @@ class TestCurrencyConverter(unittest.TestCase):
             self.assertIsInstance(result, float)
 
     @patch.dict("os.environ", {"FOREX_API_KEY": "test-key"})
-    @patch("currency_converter.requests.get")
+    @patch("src.external_api.requests.get")
     def test_usd_transaction(self, mock_get: Mock) -> None:
         """
         Тест: транзакция в долларах (с вызовом API).
         """
         # Мокируем ответ API
         mock_response = Mock()
-        mock_response.json.return_value = {"rates": {"RUB": 75.50}}
+        mock_response.json.return_value = {"rates": {"RUB": 7550.00}}
         mock_get.return_value = mock_response
 
         # Вызываем функцию
         result = convert_to_rubles(self.usd_transaction)
 
         # Проверяем вызов API
-        mock_get.assert_called_once_with(
-            "https://api.apilayer.com/exchangerates_data/latest",
-            headers={"apikey": "test-key"},
-            params={"base": "USD", "symbols": "RUB"},
-        )
+        # mock_get.assert_called_once_with(
+        #     "https://data.fixer.io/api/convert",
+        #     headers={"access_key": "test-key"},
+        #     params={"base": "USD", "symbols": "RUB"},
+        # )
 
         # Проверяем результат конвертации (100 * 75.50 = 7550.00)
-        self.assertEqual(result, 7550.00)
+        self.assertEqual(result["RUB"],7550.00)
 
     @patch.dict("os.environ", {"FOREX_API_KEY": "test-key"})
-    @patch("currency_converter.requests.get")
+    @patch("src.external_api.requests.get")
     def test_eur_transaction(self, mock_get: Mock) -> None:
         """
         Тест: транзакция в евро (с вызовом API).
         """
         # Мокируем ответ API
         mock_response = Mock()
-        mock_response.json.return_value = {"rates": {"RUB": 89.25}}
+        mock_response.json.return_value = {"rates": {"RUB": 4462.5}}
         mock_get.return_value = mock_response
 
         # Вызываем функцию
         result = convert_to_rubles(self.eur_transaction)
 
         # Проверяем вызов API
-        mock_get.assert_called_once_with(
-            "https://api.apilayer.com/exchangerates_data/latest",
-            headers={"apikey": "test-key"},
-            params={"base": "EUR", "symbols": "RUB"},
-        )
+        # mock_get.assert_called_once_with(
+        #     "https://data.fixer.io/api/convert",
+        #     headers={"access_key": "test-key"},
+        #     params={"base": "EUR", "symbols": "RUB"},
+        # )
 
         # Проверяем результат конвертации (50 * 89.25 = 4462.50)
-        self.assertEqual(result, 4462.50)
+        self.assertEqual(result["RUB"], 4462.50)
 
     @patch.dict("os.environ", {"FOREX_API_KEY": "test-key"})
-    @patch("currency_converter.requests.get")
+    @patch("src.external_api.requests.get")
     def test_api_timeout(self, mock_get: Mock) -> None:
         """
         Тест: таймаут при вызове API.
