@@ -6,7 +6,7 @@ import pytest
 import pandas as pd
 from typing import List, Dict, Any
 from unittest.mock import patch, MagicMock
-from src.data_reader import read_csv_file, read_excel_file, get_file_path
+from src.data_reader_operating import read_csv_file, read_excel_file, get_file_path
 
 
 # Фикстуры для тестовых данных
